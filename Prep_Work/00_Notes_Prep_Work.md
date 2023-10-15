@@ -4,7 +4,6 @@
 # VSCode
 * CTRL K V : prevue markdown
 * SHIFT ALT T  - CTRL 1 : focus terminal - focus editeur
-* 
 
 # Markdown
 
@@ -37,7 +36,6 @@ $$ \frac{x^2}{y_1} $$
 * DD : supprimer la cellule
 * ALT + SUPPR : effacer une sortie
 
-
 ## Lire un fichier dans le bon répertoire en mode debug dans VSCode
 
 ```
@@ -46,16 +44,13 @@ ScriptDir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(ScriptDir)
 ...
 os.chdir(cwd)
-
 ```
-
 
 ## Convertir un notebook en code python
 Dans une console
 ```
 jupyter nbconvert --to python MyNotebook.ipynb 
 ```
-
 
 ## Redirection des IO depuis un fichier
 ```

@@ -54,7 +54,8 @@ np.linspace(2.0, 3.0, num=5)
 array([ 2.0,  2.25,  2.5,  2.75, 3.0])
 ```
 
-#  Pandas - DataFrame : les lignes sont à 0 et les colonnes à 1
+#  Pandas - DataFrame 
+## Les lignes sont à l'indice 0 et les colonnes à l'indice 1
 ```
 df.drop('Row A', axis=0) 
 df.drop('Column A', axis=1)
