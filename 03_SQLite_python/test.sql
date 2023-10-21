@@ -1,9 +1,12 @@
 -- SQLite
-CREATE TABLE users (
+CREATE TABLE
+  users (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     names VARCHAR(150) NOT NULL
-);
+  );
 
-insert into users (names) values 
-    ("Nom1"),
-    ("Nom2");
+INSERT INTO
+  users (names)
+VALUES
+  ("Nom1"),
+  ("Nom2");
