@@ -193,9 +193,9 @@ SELECT
 FROM
   recipes
 WHERE
-  duration < 20;
+  duration<20;
 
--- Lire doc des expression sur https://www.sqlite.org/lang_select.html
+-- Lire doc des expressions sur https://www.sqlite.org/lang_select.html
 SELECT
   *
 FROM
@@ -215,15 +215,15 @@ SELECT
 FROM
   recipes
 WHERE
-  slug != 'soupe';
+  slug!='soupe';
 
 SELECT
   *
 FROM
   recipes
 WHERE
-  slug = = 'soupe'
-  AND duration <= 10;
+  slug=='soupe'
+  AND duration<=10;
 
 -- ILIKE insensible à la casse
 SELECT
@@ -242,19 +242,21 @@ WHERE
 
 DELETE FROM recipes
 WHERE
-  title = = "Soupe 200";
+  title=="Soupe 200";
 
 DELETE FROM recipes
 WHERE
-  title = "Soupe 100";
+  title="Soupe 100";
 
--- DELETE FROM recipes;                          -- Supprime tout !
+-- DELETE FROM recipes;                          -- ! Supprime tout 
+;
+
 -- UPDATE
 UPDATE recipes
 SET
-  title = "Soupe de légumes"
+  title="Soupe de légumes"
 WHERE
-  title = "Soupe";
+  title="Soupe";
 
 SELECT
   *
@@ -313,7 +315,7 @@ VALUES
 
 DELETE FROM recipes
 WHERE
-  id = = 2;
+  id==2;
 
 -- Les Id sont 3 et 4
 INSERT INTO
@@ -355,7 +357,7 @@ SELECT
 FROM
   recipes
 WHERE
-  title = = 'Soupe';
+  title=='Soupe';
 
 EXPLAIN QUERY PLAN
 SELECT
@@ -363,7 +365,7 @@ SELECT
 FROM
   recipes
 WHERE
-  id = = 3;
+  id==3;
 
 -- Création d'un index sur les slugs
 SELECT
@@ -373,15 +375,15 @@ FROM
 
 UPDATE recipes
 SET
-  slug = "soupe100"
+  slug="soupe100"
 WHERE
-  id = = 3;
+  id==3;
 
 UPDATE recipes
 SET
-  slug = "soupe300"
+  slug="soupe300"
 WHERE
-  id = = 4;
+  id==4;
 
 SELECT
   *
@@ -444,9 +446,10 @@ SELECT
 FROM
   recipes
 WHERE
-  slug = = "soupe1000";
+  slug=="soupe1000";
 
 -- Supprimer un index
+-- ! PRAGMA
 PRAGMA index_list ('recipes');
 
 -- pas besoin de préciser la table l'id_slug est au niveau de la base elle même
@@ -479,7 +482,7 @@ FROM
   recipes;
 
 -- Y a NULL dans le slug
--- Si on veut interdire ce cas il faut donner des contrainte lors de la création
+-- Si on veut interdire ce cas il faut donner des contraintes lors de la création
 DROP TABLE recipes;
 
 -- Dans create table voir column constraint 
@@ -527,7 +530,7 @@ INSERT INTO
 VALUES
   ('Soupe 1', 'soupe1', 10, FALSE, 1690978150);
 
--- Utilisable dans les requêtes
+-- NULL est utilisable dans les requêtes
 SELECT
   *
 FROM
@@ -545,7 +548,7 @@ WHERE
 -- met tous les contenus à NULL
 UPDATE recipes
 SET
-  content = NULL;
+  content=NULL;
 
 -- Valeur par defaut
 -- On met NOT NULL pour que suite à un update il puisse pas être vide
@@ -577,7 +580,8 @@ VALUES
 -- 9 : Clés étrangères et jointures
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 -- spécifique SQLite (voir doc)
 DROP TABLE IF EXISTS categories;
@@ -634,22 +638,22 @@ SELECT
   *
 FROM
   recipes
-  JOIN categories ON recipes.category_id = categories.id;
+  JOIN categories ON recipes.category_id=categories.id;
 
 SELECT
   *
 FROM
   recipes r
-  JOIN categories c ON r.category_id = c.id;
+  JOIN categories c ON r.category_id=c.id;
 
--- utilise des alias r et c
+-- utilisation des alias r et c
 SELECT
   r.id,
   r.title,
   c.title
 FROM
   recipes r
-  JOIN categories c ON r.category_id = c.id;
+  JOIN categories c ON r.category_id=c.id;
 
 SELECT
   r.id,
@@ -657,15 +661,16 @@ SELECT
   c.title AS "Catégorie"
 FROM
   recipes r
-  JOIN categories c ON r.category_id = c.id;
+  JOIN categories c ON r.category_id=c.id;
 
 -- Pour parler des contraintes sur le JOIN
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 -- spécifique SQLite (voir doc)
 DROP TABLE IF EXISTS categories;
 
--- Bug. Si besoin, executer cette ligne puis tout relancer
+-- Bug? Si besoin, executer cette ligne puis tout relancer
 DROP TABLE IF EXISTS recipes;
 
 CREATE TABLE
@@ -714,7 +719,7 @@ SELECT
   c.title AS "Catégorie"
 FROM
   recipes r
-  JOIN categories c ON r.category_id = c.id;
+  JOIN categories c ON r.category_id=c.id;
 
 SELECT
   r.id,
@@ -722,7 +727,7 @@ SELECT
   c.title AS "Catégorie"
 FROM
   recipes r
-  INNER JOIN categories c ON r.category_id = c.id;
+  INNER JOIN categories c ON r.category_id=c.id;
 
 -- INNER = default            
 -- Un LEFT JOIN ou OUTER JOIN selectionne les éléments qui ont une liaison ainsi que ceux qui 
@@ -736,16 +741,16 @@ SELECT
   c.title AS "Catégorie"
 FROM
   recipes r
-  LEFT JOIN categories c ON r.category_id = c.id;
+  LEFT JOIN categories c ON r.category_id=c.id;
 
 -- Dans d'autres bases il existe le RIGHT JOIN
 -- Qu'est ce qui se passe si on supprime une catégorie ?
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 -- spécifique SQLite (voir doc)
 DROP TABLE IF EXISTS categories;
 
--- Bug. Si besoin, executer cette ligne puis tout relancer
 DROP TABLE IF EXISTS recipes;
 
 CREATE TABLE
@@ -780,34 +785,34 @@ VALUES
 
 DELETE FROM categories
 WHERE
-  id = 2;
+  id=2;
 
 SELECT
   *
 FROM
   recipes;
 
--- bizarre on voit toujours les categories 2
+-- Bizarre on voit toujours les categories_id 2
 SELECT
   *
 FROM
   categories;
 
--- alors qu'elles ne sont plus dans la base categories
+-- Alors qu'elles ne sont plus dans la base categories
 -- Faut ajouter des contraintes au niveau de FOREIGN KEY
--- Voir ON DELETE, ON UPDATE dans la partie foreign key 
+-- Voir ON DELETE, ON UPDATE dans la partie foreign key ci-dessous
 -- On les retrouve dans la partie CREATE TABLE
 -- Par defaut c'est NO ACTION
 -- RESTRICT interdit la suppression si la clé est utilisée
 -- SET NULL
 -- SET DEFAULT
 -- CASCADE : supprime la catégorie 2 ainsi que les recettes de la catégorie en question
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 -- spécifique SQLite (voir doc)
 DROP TABLE IF EXISTS categories;
 
--- Bug. Si besoin, executer cette ligne puis tout relancer
 DROP TABLE IF EXISTS recipes;
 
 CREATE TABLE
@@ -830,8 +835,8 @@ CREATE TABLE
     slug VARCHAR(50) NOT NULL UNIQUE,
     content TEXT,
     category_id INTEGER,
-    -- FOREIGN KEY (category_id) REFERENCES categories(id)  ON DELETE RESTRICT -- Bien voir le RESTRICT
-    -- FOREIGN KEY (category_id) REFERENCES categories(id)  ON DELETE CASCADE  -- Bien voir le CASCADE
+    -- FOREIGN KEY (category_id) REFERENCES categories(id)  ON DELETE RESTRICT -- ! Bien voir le RESTRICT
+    -- FOREIGN KEY (category_id) REFERENCES categories(id)  ON DELETE CASCADE  -- ! Bien voir le CASCADE
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE SET NULL
   );
 
@@ -844,7 +849,7 @@ VALUES
 
 DELETE FROM categories
 WHERE
-  id = 2;
+  id=2;
 
 SELECT
   *
@@ -853,7 +858,8 @@ FROM
 
 -- Le ON UPDATE peut être utile si on a pas lié sur une clé primaire mais sur un champ qui peut être modifié
 -- Comment récupérer les recettes qui sont dans la catégorie dessert ?
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 -- spécifique SQLite (voir doc)
 DROP TABLE IF EXISTS categories;
@@ -901,9 +907,9 @@ SELECT
   c.title AS "Catégorie"
 FROM
   recipes r
-  LEFT JOIN categories c ON r.category_id = c.id
+  LEFT JOIN categories c ON r.category_id=c.id
 WHERE
-  c.title = "Dessert";
+  c.title="Dessert";
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -922,7 +928,10 @@ WHERE
 -- On supprime et on recréé un fichier db.sqlite
 -- Clic droit sur le nom de fichier et "Open Database" pour afficher SQL Explorer
 -- Créer les requêtes pour le MLD précédent
-PRAGMA foreign_keys = ON;
+;
+
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 DROP TABLE IF EXISTS ingredients_recipes;
 
@@ -978,7 +987,7 @@ CREATE TABLE
     UNIQUE (recipe_id, category_id)
   );
 
--- Insertion de quelque données
+-- Insertion de quelques données
 INSERT INTO
   users (user_name, email)
 VALUES
@@ -1017,30 +1026,30 @@ SELECT
   *
 FROM
   recipes
-  JOIN categories_recipes ON categories_recipes.recipe_id = recipes.id;
+  JOIN categories_recipes ON categories_recipes.recipe_id=recipes.id;
 
 -- même chose mais je trouve plus facile à relire
 SELECT
   *
 FROM
   recipes
-  JOIN categories_recipes ON recipes.id = categories_recipes.recipe_id;
+  JOIN categories_recipes ON recipes.id=categories_recipes.recipe_id;
 
 -- On peut avoir plus d'une jointure
 SELECT
   *
 FROM
   recipes
-  JOIN categories_recipes ON recipes.id = categories_recipes.recipe_id
-  JOIN categories ON categories.id = categories_recipes.category_id;
+  JOIN categories_recipes ON recipes.id=categories_recipes.recipe_id
+  JOIN categories ON categories.id=categories_recipes.category_id;
 
 SELECT
   recipes.title,
   categories.title AS "category"
 FROM
   recipes
-  JOIN categories_recipes ON recipes.id = categories_recipes.recipe_id
-  JOIN categories ON categories.id = categories_recipes.category_id;
+  JOIN categories_recipes ON recipes.id=categories_recipes.recipe_id
+  JOIN categories ON categories.id=categories_recipes.category_id;
 
 CREATE TABLE
   IF NOT EXISTS ingredients (
@@ -1068,7 +1077,7 @@ VALUES
 --  PRIMARY KEY (recipe_id, ingredient_id),
 --  UNIQUE (recipe_id, ingredient_id)
 --);
--- Z! Z! C'est pas une bonne idée de mettre des commentaires (longs?) dans une requête
+-- ! C'est pas une bonne idée de mettre des commentaires (longs?) dans une requête
 CREATE TABLE
   IF NOT EXISTS ingredients_recipes (
     recipe_id INTEGER NOT NULL,
@@ -1098,40 +1107,40 @@ SELECT
 FROM
   ingredients
 WHERE
-  name = "Oeuf";
+  name="Oeuf";
 
 SELECT
   *
 FROM
   ingredients
 WHERE
-  ingredients.name = "Oeuf";
+  ingredients.name="Oeuf";
 
 SELECT
   *
 FROM
   ingredients
-  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
+  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
-  ingredients.name = "Oeuf";
+  ingredients.name="Oeuf";
 
 SELECT
   *
 FROM
   ingredients
-  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 WHERE
-  ingredients.name = "Oeuf";
+  ingredients.name="Oeuf";
 
 SELECT
   recipes.title AS "Recette avec des oeufs"
 FROM
   ingredients
-  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 WHERE
-  ingredients.name = "Oeuf";
+  ingredients.name="Oeuf";
 
 -- Retrouver les recettes où il n'y a pas d'ingrédient
 SELECT
@@ -1143,20 +1152,20 @@ SELECT
   *
 FROM
   recipes
-  JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id;
+  JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id;
 
 -- clé etrangère = id sur la table ciblée
 SELECT
   *
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id;
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id;
 
 SELECT
   *
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
 WHERE
   ingredients_recipes.recipe_id IS NULL;
 
@@ -1164,7 +1173,7 @@ SELECT
   *
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
 WHERE
   recipe_id IS NULL;
 
@@ -1172,7 +1181,7 @@ SELECT
   recipes.title AS "Recettes sans ingrédient"
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
 WHERE
   ingredients_recipes.recipe_id IS NULL;
 
@@ -1181,7 +1190,7 @@ SELECT
   *
 FROM
   recipes
-  JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id;
+  JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id;
 
 -- Mettre à jour une des quantités
 -- Le second JOIN permet d'accéder au nom de l'ingrédient
@@ -1193,15 +1202,15 @@ SELECT
   ingredients.name AS "Ingrédient"
 FROM
   recipes
-  JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
-  JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id;
+  JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
+  JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id;
 
 UPDATE ingredients_recipes
 SET
-  quantity = 10
+  quantity=10
 WHERE
-  recipe_id = 2
-  AND ingredient_id = 3;
+  recipe_id=2
+  AND ingredient_id=3;
 
 -- pas de clé primaire simple, faut préciser les 2
 -- Montre que la quantité a bien été mise à jour
@@ -1212,8 +1221,8 @@ SELECT
   ingredients.name AS "Ingrédient"
 FROM
   recipes
-  JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
-  JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id;
+  JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
+  JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id;
 
 -- Afficher une recette avec la liste des ingrédients
 -- Voir une solution plus haut
@@ -1222,7 +1231,7 @@ SELECT
 FROM
   recipes
 WHERE
-  id = 2;
+  id=2;
 
 -- On fait pas un double left join depuis les recettes (trop lourd, moins efficace)
 -- On part de la table de liaison ingredients_recipes
@@ -1235,9 +1244,9 @@ SELECT
   *
 FROM
   ingredients_recipes
-  JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id -- clé étrangère puis clé primaire
+  JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id -- clé étrangère puis clé primaire
 WHERE
-  ingredients_recipes.recipe_id = 2;
+  ingredients_recipes.recipe_id=2;
 
 SELECT
   ingredients_recipes.quantity,
@@ -1245,9 +1254,9 @@ SELECT
   ingredients.name
 FROM
   ingredients_recipes
-  JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id -- clé étrangère puis clé primaire
+  JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id -- clé étrangère puis clé primaire
 WHERE
-  ingredients_recipes.recipe_id = 2;
+  ingredients_recipes.recipe_id=2;
 
 -- Supprimer la levure chimique
 -- Voir ingredients_recipes = 3 à la ligne 3
@@ -1258,7 +1267,7 @@ FROM
 
 DELETE FROM ingredients
 WHERE
-  id = 3;
+  id=3;
 
 -- La levure est toujours dans la table ingredients_recipes
 -- En fait en mode exécution ligne à ligne les pragma sont pas exécutées
@@ -1282,7 +1291,8 @@ FROM
 -- Fusionner des lignes pour obtenir : somme, total, nb etc.
 -- Lire https://www.sqlite.org/lang_aggfunc.html
 -- On repart de l'exemple précédent
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 DROP TABLE IF EXISTS ingredients_recipes;
 
@@ -1411,28 +1421,33 @@ SELECT
   ingredients.name
 FROM
   ingredients_recipes
-  JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id -- clé étrangère puis clé primaire
+  JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id -- clé étrangère puis clé primaire
 WHERE
-  ingredients_recipes.recipe_id = 2;
+  ingredients_recipes.recipe_id=2;
 
--- On veut le nb de recettes
-SELECT
-  COUNT(id)
-FROM
-  recipes;
-
+--
+-- Ne pas hésiter à sélectionner toutes les lignes ci-dessus puis à faire "Execute Selected Query"
+--
+-------------------------------------------------------------------------------
+-- Les fonctions d'agrégation
 -- Le dates sont nulles
 SELECT
   *
 FROM
   recipes;
 
+-- On cherche le nb de recettes
+SELECT
+  COUNT(id)
+FROM
+  recipes;
+
 -- On fixe une date
 UPDATE recipes
 SET
-  DATE = 100
+  DATE=100
 WHERE
-  id = 2;
+  id=2;
 
 SELECT
   *
@@ -1471,7 +1486,7 @@ FROM
   recipes;
 
 -- Afficher en fonction de la durée
--- Z! Dans le SELECT d'une requête où il y a un GROUP BY on ne peut afficher
+-- ! Dans le SELECT d'une requête où il y a un GROUP BY on ne peut afficher
 -- Que des aggrégations : COUNT(id) 
 -- Dans champs qui sont agrégés duration (duration est dans le GROUP BY)
 SELECT
@@ -1498,7 +1513,7 @@ FROM
 GROUP BY
   duration
 HAVING
-  COUNT >= 2;
+  COUNT>=2;
 
 SELECT
   COUNT(id),
@@ -1508,7 +1523,7 @@ FROM
 GROUP BY
   duration
 HAVING
-  COUNT(id) >= 2;
+  COUNT(id)>=2;
 
 INSERT INTO
   ingredients_recipes (recipe_id, ingredient_id, quantity, unit)
@@ -1528,14 +1543,14 @@ SELECT
   *
 FROM
   ingredients
-  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id;
+  JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id;
 
 -- Miel apparaît
 SELECT
   *
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id;
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id;
 
 -- Compter le nb de recettes où les ingrédients apparaissent
 SELECT
@@ -1543,19 +1558,19 @@ SELECT
   COUNT(id)
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
 GROUP BY
   ingredients.name;
 
 -- Z! Bizarre miel apparaît comme utilisé dans une recette alors que c'est pas le cas
 -- C'est à cause du id utilisé par COUNT qui n'est jamais null
--- Dorénvant on voit bien que miel n'est pas utilisé
+-- Dorénavant on voit bien que miel n'est pas utilisé
 SELECT
   ingredients.name,
   COUNT(ingredients_recipes.recipe_id)
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
 GROUP BY
   ingredients.name;
 
@@ -1567,26 +1582,26 @@ SELECT
   recipes.duration
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 GROUP BY
   ingredients.name,
   recipes.duration;
 
--- Si on veut "juste" éviter les duplications vaut mieu utiliser DISTINCT
+-- Si on veut "juste" éviter les duplications vaut mieux utiliser DISTINCT
 -- On utilise GROUP BY que ssi on utilise une fonction d'aggrégation SUM, MIN, MAX...
 -- On veut tous les ingrédients qui ont au moins une recette
 SELECT
   *
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id;
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id;
 
 SELECT
   *
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IS NOT NULL;
 
@@ -1596,7 +1611,7 @@ SELECT
   ingredients.name
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IS NOT NULL;
 
@@ -1604,7 +1619,7 @@ SELECT DISTINCT
   ingredients.name
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IS NOT NULL;
 
@@ -1615,8 +1630,8 @@ SELECT DISTINCT
   recipes.duration
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 WHERE
   ingredients_recipes.recipe_id IS NOT NULL;
 
@@ -1624,7 +1639,7 @@ SELECT DISTINCT
   ingredients.name
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IS NOT NULL;
 
@@ -1637,10 +1652,11 @@ WHERE
 -- 13 : Order et Limit
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
--- Retrouver les 3 premiers ingrédients les plus utilisés dans l'ordre décropissants
+-- Retrouver les 3 premiers ingrédients les plus utilisés dans l'ordre décroissant
 -- Dans SELECT on peut ajouter ORDER et/ou LIMIT    
 -- On repart de ce que l'on avait
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 DROP TABLE IF EXISTS ingredients_recipes;
 
@@ -1765,9 +1781,9 @@ VALUES
 -- On fixe une date
 UPDATE recipes
 SET
-  DATE = 100
+  DATE=100
 WHERE
-  id = 2;
+  id=2;
 
 INSERT INTO
   recipes (title, slug, duration, user_id)
@@ -1792,19 +1808,26 @@ SELECT
   COUNT(ingredients_recipes.recipe_id) AS "Count"
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 GROUP BY
   ingredients.name;
 
+;
+
+--
+-- Ne pas hésiter à sélectionner toutes les lignes ci-dessus puis à faire "Execute Selected Query"
+--
+-------------------------------------------------------------------------------
+-- Order et Limit
 -- Par nb de recette décroissant
 SELECT
   ingredients.name,
   COUNT(ingredients_recipes.recipe_id) AS "Count"
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 GROUP BY
   ingredients.name
 ORDER BY
@@ -1818,8 +1841,8 @@ SELECT
   COUNT(ingredients_recipes.recipe_id) AS "Count"
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 GROUP BY
   ingredients.name
 ORDER BY
@@ -1833,8 +1856,8 @@ SELECT
   COUNT(ingredients_recipes.recipe_id) AS "Count"
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 GROUP BY
   ingredients.name
 ORDER BY
@@ -1846,8 +1869,8 @@ SELECT
   COUNT(ingredients_recipes.recipe_id) AS "Count"
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 GROUP BY
   ingredients.name
 ORDER BY
@@ -1862,8 +1885,8 @@ SELECT
   COUNT(ingredients_recipes.recipe_id) AS "Count"
 FROM
   ingredients
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id = ingredients.id
-  LEFT JOIN recipes ON ingredients_recipes.recipe_id = recipes.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.ingredient_id=ingredients.id
+  LEFT JOIN recipes ON ingredients_recipes.recipe_id=recipes.id
 GROUP BY
   ingredients.name
 ORDER BY
@@ -1888,7 +1911,8 @@ OFFSET
 -- Un champ peut être remplacé par une sous-requête
 -- Ou dans le FROM
 -- Ou dans les conditions du WHERE
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 DROP TABLE IF EXISTS ingredients_recipes;
 
@@ -2013,9 +2037,9 @@ VALUES
 -- On fixe une date
 UPDATE recipes
 SET
-  DATE = 100
+  DATE=100
 WHERE
-  id = 2;
+  id=2;
 
 INSERT INTO
   recipes (title, slug, duration, user_id)
@@ -2038,15 +2062,21 @@ VALUES
 -- Remet la data de la recette Madeleine à NULL comme dans la vidéo
 UPDATE recipes
 SET
-  DATE = NULL
+  DATE=NULL
 WHERE
-  id = 2;
+  id=2;
 
 SELECT
   *
 FROM
   recipes;
 
+;
+
+--
+-- Ne pas hésiter à sélectionner toutes les lignes ci-dessus puis à faire "Execute Selected Query"
+--
+-------------------------------------------------------------------------------
 -- Sous requête entre parenthèses
 -- L'exemple ci-dessous n'a pas de sens mais bon...
 SELECT
@@ -2073,7 +2103,7 @@ FROM
 
 -- On veut ne nb d'ingrédients par recette
 -- On parle de sous-requete correlée
--- Z! Impact sur les perfs
+-- ! Impact sur les perfs
 SELECT
   *,
   (
@@ -2082,7 +2112,7 @@ SELECT
     FROM
       ingredients_recipes
     WHERE
-      recipe_id = recipes.id
+      recipe_id=recipes.id
   ) AS "Compteur"
 FROM
   recipes;
@@ -2121,16 +2151,16 @@ SELECT
 FROM
   categories
 WHERE
-  categories.title = "Dessert";
+  categories.title="Dessert";
 
 -- Maintenant on veut les recettes liées
 SELECT
   *
 FROM
   categories
-  LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+  LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
 WHERE
-  categories.title = "Dessert";
+  categories.title="Dessert";
 
 -- On voit l'id de la recette à l'écran
 -- On n'affiche que les id des recettes
@@ -2138,9 +2168,9 @@ SELECT
   categories_recipes.recipe_id
 FROM
   categories
-  LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+  LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
 WHERE
-  categories.title = "Dessert";
+  categories.title="Dessert";
 
 -- Maintenant on affiche les ingrédients
 SELECT
@@ -2160,9 +2190,9 @@ WHERE
       categories_recipes.recipe_id
     FROM
       categories
-      LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+      LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
     WHERE
-      categories.title = "Dessert"
+      categories.title="Dessert"
   );
 
 SELECT
@@ -2175,9 +2205,9 @@ WHERE
       categories_recipes.recipe_id
     FROM
       categories
-      LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+      LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
     WHERE
-      categories.title = "Dessert"
+      categories.title="Dessert"
   );
 
 -- On veut voir les noms des ingrédients => JOIN
@@ -2185,30 +2215,30 @@ SELECT
   ingredients.*
 FROM
   ingredients_recipes
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IN (
     SELECT
       categories_recipes.recipe_id
     FROM
       categories
-      LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+      LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
     WHERE
-      categories.title = "Dessert"
+      categories.title="Dessert"
   );
 
 SELECT
   ingredients.*
 FROM
   ingredients_recipes
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IN (
     SELECT
       categories_recipes.recipe_id
     FROM
       categories
-      LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+      LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
     WHERE
       categories.title NOT IN ("Dessert", "Gâteau")
   );
@@ -2221,14 +2251,14 @@ SELECT
   ingredients.*
 FROM
   ingredients_recipes
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IN (
     SELECT
       categories_recipes.recipe_id
     FROM
       categories
-      LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+      LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
     WHERE
       categories.title NOT IN ("Dessert", "Gâteau")
   );
@@ -2239,16 +2269,16 @@ SELECT
   ingredients.*
 FROM
   ingredients_recipes
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id
 WHERE
   ingredients_recipes.recipe_id IN (
     SELECT
       categories_recipes.recipe_id
     FROM
       categories
-      LEFT JOIN categories_recipes ON categories.id = categories_recipes.category_id -- on met à dte la clé étrangère
+      LEFT JOIN categories_recipes ON categories.id=categories_recipes.category_id -- on met à dte la clé étrangère
     WHERE
-      categories_recipes.recipe_id = ingredients_recipes.recipe_id
+      categories_recipes.recipe_id=ingredients_recipes.recipe_id
   );
 
 -- Faut privilégier les JOIN
@@ -2262,9 +2292,10 @@ WHERE
 -- Permettent de regrouper des requêtes
 -- Revenir en arrière si problème
 -- Penser aux insertions de données
--- "Fais tout d'un coup on ne fait rien"
+-- "Fait tout d'un coup ou ne fait rien"
 -- Lire la doc : https://www.sqlite.org/lang_transaction.html
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 DROP TABLE IF EXISTS ingredients_recipes;
 
@@ -2389,9 +2420,9 @@ VALUES
 -- On fixe une date
 UPDATE recipes
 SET
-  DATE = 100
+  DATE=100
 WHERE
-  id = 2;
+  id=2;
 
 INSERT INTO
   recipes (title, slug, duration, user_id)
@@ -2414,15 +2445,19 @@ VALUES
 -- Remet la date de la recette Madeleine à NULL comme dans la vidéo
 UPDATE recipes
 SET
-  DATE = NULL
+  DATE=NULL
 WHERE
-  id = 2;
+  id=2;
 
 SELECT
   *
 FROM
   recipes;
 
+--
+-- Ne pas hésiter à sélectionner toutes les lignes ci-dessus puis à faire "Execute Selected Query"
+--
+-------------------------------------------------------------------------------
 -- On veut supprimer une recette mais mettre tout ça dans une transaction
 -- SELECT * FROM recipes;
 -- DELETE FROM recipes WHERE id = 1;
@@ -2437,7 +2472,7 @@ FROM
 
 DELETE FROM recipes
 WHERE
-  id = 1;
+  id=1;
 
 SELECT
   *
@@ -2461,7 +2496,7 @@ FROM
 
 DELETE FROM recipes
 WHERE
-  id = 1;
+  id=1;
 
 SELECT
   *
@@ -2475,7 +2510,7 @@ SELECT
 FROM
   recipes;
 
--- Utile avec les contraintes sur les clés étrangère et les contraintes d'unicité
+-- Utile avec les contraintes sur les clés étrangères et les contraintes d'unicité
 -- Suite à une insertion qui serait pas bonne
 -- Dans la doc faire une recherche sur foreign key et sur la page rechercher ROLLBACK
 -- Voir 4.2 ici : https://www.sqlite.org/foreignkeys.html
@@ -2486,11 +2521,11 @@ FROM
 -- Dans la doc faire une recherche sur ON CONFLICT
 -- Lire : https://www.sqlite.org/lang_conflict.html
 -- Possibilité de faire un ROLLBACK si un conflit arrive lors d'une transaction
--- Z! C'est spécifique à SQLite
+-- ! C'est spécifique à SQLite
 -- Important d'utiliser des transaction quand on insère des données
 -- Ici dans la trasaction on supprime la recette 2 et on fait une erreur
 -- Sur l'erreur y a un ROLLBACK
--- A la fin la l'intégrité de la table n'est pas affectée
+-- A la fin l'intégrité de la table n'est pas affectée
 BEGIN TRANSACTION;
 
 SELECT
@@ -2500,14 +2535,14 @@ FROM
 
 DELETE FROM recipes
 WHERE
-  id = 2;
+  id=2;
 
 SELECT
   *
 FROM
   recipes
 WHERE
-  Dummy = 42;
+  Dummy=42;
 
 COMMIT TRANSACTION;
 
@@ -2525,11 +2560,12 @@ FROM
 -- 16 : Les vues
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
--- Tables viteulles issues de requêtes particulières
+-- Tables vituelles issues de requêtes particulières
 -- Evite les sous requêtes
 -- Impact sur les perfs
 -- Doc CREATE VIEW : https://www.sqlite.org/lang_createview.html
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 DROP TABLE IF EXISTS ingredients_recipes;
 
@@ -2659,13 +2695,17 @@ SELECT
 FROM
   recipes;
 
+--
+-- Ne pas hésiter à sélectionner toutes les lignes ci-dessus puis à faire "Execute Selected Query"
+--
+-------------------------------------------------------------------------------
 -- On veut a liste des ingrédients concaténés
 SELECT
   *
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id;
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id;
 
 -- On veut le titre de la recette et les ingrédients qui la compose
 SELECT
@@ -2673,8 +2713,8 @@ SELECT
   GROUP_CONCAT (ingredients.name, ", ")
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id
 GROUP BY
   recipes.id;
 
@@ -2683,8 +2723,8 @@ SELECT
   GROUP_CONCAT (ingredients.name, ", ") AS "Ingrédients"
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id
 GROUP BY
   recipes.id;
 
@@ -2699,8 +2739,8 @@ SELECT
   GROUP_CONCAT (ingredients.name, ", ") AS "Ingrédients"
 FROM
   recipes
-  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id = recipes.id
-  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id = ingredients.id
+  LEFT JOIN ingredients_recipes ON ingredients_recipes.recipe_id=recipes.id
+  LEFT JOIN ingredients ON ingredients_recipes.ingredient_id=ingredients.id
 GROUP BY
   recipes.id;
 
@@ -2744,7 +2784,8 @@ DROP VIEW recette_avec_ingredients;
 -------------------------------------------------------------------------------
 -- Ajoute de la logique quand des ops sont effectuées sur la BdD
 -- Exemple sur ajout, modif ou suppression de ligne
-PRAGMA foreign_keys = ON;
+-- ! PRAGMA
+PRAGMA foreign_keys=ON;
 
 DROP TABLE IF EXISTS ingredients_recipes;
 
@@ -2874,6 +2915,10 @@ SELECT
 FROM
   recipes;
 
+--
+-- Ne pas hésiter à sélectionner toutes les lignes ci-dessus puis à faire "Execute Selected Query"
+--
+-------------------------------------------------------------------------------
 -- On veut savoir combien de fois les ingrédients sont utilisés
 -- On faisait les LEFT JOIN
 -- On veut ajouter un champ "usage count" dans la table ingrédient et qu'il se mette à jour automatiquement
@@ -2890,9 +2935,9 @@ FROM
 CREATE TRIGGER update_usage_count_on_ingredients_linked AFTER INSERT ON ingredients_recipes BEGIN
 UPDATE ingredients
 SET
-  usage_count = usage_count + 1
+  usage_count=usage_count+1
 WHERE
-  id = NEW.ingredient_id;
+  id=NEW.ingredient_id;
 
 END;
 
@@ -2903,7 +2948,7 @@ FROM
   ingredients;
 
 -- La façon de lister les triggers dépend de la BdD
--- SQLite => voir la talbe masquée sql_master
+-- SQLite => voir la table masquée sql_master
 SELECT
   *
 FROM
@@ -2915,7 +2960,7 @@ SELECT
 FROM
   sqlite_master
 WHERE
-  type = "trigger";
+  type="trigger";
 
 -- On rajoute du miel dans la soupe
 INSERT INTO
@@ -2933,9 +2978,9 @@ FROM
 CREATE TRIGGER decrement_usage_count_on_ingredients_unlinked AFTER DELETE ON ingredients_recipes BEGIN
 UPDATE ingredients
 SET
-  usage_count = usage_count - 1
+  usage_count=usage_count - 1
 WHERE
-  id = OLD.ingredient_id;
+  id=OLD.ingredient_id;
 
 END;
 
@@ -2945,8 +2990,8 @@ END;
 -- WHERE type = "trigger";
 DELETE FROM ingredients_recipes
 WHERE
-  recipe_id = 1
-  AND ingredient_id = 7;
+  recipe_id=1
+  AND ingredient_id=7;
 
 -- Miel est bien reppassé à 0
 SELECT
@@ -2954,10 +2999,10 @@ SELECT
 FROM
   ingredients;
 
--- Attnetion les triggers insèrent de la logique dans la BdD
+-- ! Attention les triggers insèrent de la logique dans la BdD
 -- On préfère souvant laisser la logique dans le code
 -- Ici les compteurs seraient mis à jour via du code 
--- Les triggers ralentissent les insertions et suppriessions par exemple
+-- Les triggers ralentissent les insertions et suppressions par exemple
 -- Vider une base peut devenir très lent
 ;
 
@@ -3023,7 +3068,7 @@ FROM
   temp_table;
 
 -- Y a bien 1 seul ;
--- On cherche les categories parentes du petit requin blanc
+-- On cherche les catégories parentes du petit requin blanc
 -- Marche pas car il cherche temp_table.parent_id
 WITH RECURSIVE
   temp_table AS (
@@ -3032,14 +3077,14 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 14 -- Ca c'est la ligne qui initie la récursion
+      id=14 -- Ca c'est la ligne qui initie la récursion
     UNION ALL -- On concatène toutes les lignes : https://www.sqlitetutorial.net/sqlite-union/
     SELECT
       *
     FROM
       categories2
     WHERE
-      id = temp_table.parent_id -- La seconde requete peut utiliser la vue
+      id=temp_table.parent_id -- La seconde requete peut utiliser la vue
   )
 SELECT
   *
@@ -3055,7 +3100,7 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 14
+      id=14
     UNION ALL
     SELECT
       *
@@ -3063,7 +3108,7 @@ WITH RECURSIVE
       categories2,
       temp_table
     WHERE
-      id = temp_table.parent_id
+      id=temp_table.parent_id
   )
 SELECT
   *
@@ -3078,7 +3123,7 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 14
+      id=14
     UNION ALL
     SELECT
       *
@@ -3086,7 +3131,7 @@ WITH RECURSIVE
       categories2,
       temp_table
     WHERE
-      categories2.id = temp_table.parent_id
+      categories2.id=temp_table.parent_id
   )
 SELECT
   *
@@ -3102,7 +3147,7 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 14
+      id=14
     UNION ALL
     SELECT
       categories2.id,
@@ -3112,7 +3157,7 @@ WITH RECURSIVE
       categories2,
       temp_table
     WHERE
-      categories2.id = temp_table.parent_id
+      categories2.id=temp_table.parent_id
   )
 SELECT
   *
@@ -3129,7 +3174,7 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 11
+      id=11
     UNION ALL
     SELECT
       categories2.id,
@@ -3139,7 +3184,7 @@ WITH RECURSIVE
       categories2,
       temp_table
     WHERE
-      categories2.parent_id = temp_table.id
+      categories2.parent_id=temp_table.id
   )
 SELECT
   *
@@ -3158,7 +3203,7 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 11
+      id=11
     UNION ALL
     SELECT
       categories2.id,
@@ -3168,7 +3213,7 @@ WITH RECURSIVE
       categories2,
       temp_table
     WHERE
-      categories2.parent_id = temp_table.id
+      categories2.parent_id=temp_table.id
   )
 SELECT
   *
@@ -3186,18 +3231,18 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 11
+      id=11
     UNION ALL
     SELECT
       categories2.id,
       categories2.name,
       categories2.parent_id,
-      children.Niveau + 1 AS "Niveau"
+      children.Niveau+1 AS "Niveau"
     FROM
       categories2,
       children
     WHERE
-      categories2.parent_id = children.id
+      categories2.parent_id=children.id
   )
 SELECT
   id,
@@ -3217,19 +3262,19 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 11
+      id=11
     UNION ALL
     SELECT
       categories2.id,
       categories2.name,
       categories2.parent_id,
-      children.level + 1 AS level,
-      children.path || children.name || " > " AS path -- Vérifier mais || est certainement spécifique à SQLite
+      children.level+1 AS level,
+      children.path||children.name||" > " AS path -- Vérifier mais || est certainement spécifique à SQLite
     FROM
       categories2,
       children
     WHERE
-      categories2.parent_id = children.id
+      categories2.parent_id=children.id
   )
 SELECT
   id,
@@ -3253,19 +3298,19 @@ WITH RECURSIVE
     FROM
       categories2
     WHERE
-      id = 11
+      id=11
     UNION ALL
     SELECT
       categories2.id,
       categories2.name,
       categories2.parent_id,
-      children.level + 1,
-      children.path || children.name || " > " -- Vérifier mais || est certainement spécifique à SQLite
+      children.level+1,
+      children.path||children.name||" > " -- Vérifier mais || est certainement spécifique à SQLite
     FROM
       categories2,
       children
     WHERE
-      categories2.parent_id = children.id
+      categories2.parent_id=children.id
   )
 SELECT
   id,
@@ -3275,7 +3320,7 @@ SELECT
 FROM
   children;
 
--- Z! Attention aux perfs
+-- ! Attention aux perfs
 ;
 
 ;
@@ -3557,7 +3602,7 @@ SELECT
 FROM
   sales
 WHERE
-  ROW_NUMBER < 4;
+  ROW_NUMBER<4;
 
 -- Faut transformer la requête précédente en sous-requête
 SELECT
@@ -3582,7 +3627,7 @@ FROM
       sales
   ) AS ma_table
 WHERE
-  ma_table.row_number < 4;
+  ma_table.row_number<4;
 
 -- Le Top 3 par produit
 SELECT
@@ -3604,7 +3649,7 @@ FROM
       )
   ) AS ma_table
 WHERE
-  ma_table.row_number < 4;
+  ma_table.row_number<4;
 
 -- Running total - Somme cumulative
 -- Window function permettent de faire des calculs sur différentes colonnes
@@ -3733,7 +3778,7 @@ GROUP BY
 SELECT
   product,
   SUM(profit) AS revenue,
-  SUM(profit) * 1.0 / (
+  SUM(profit)*1.0/(
     SELECT
       SUM(profit)
     FROM
@@ -3750,7 +3795,7 @@ ORDER BY
 SELECT
   country,
   SUM(profit) AS revenue,
-  SUM(profit) * 1.0 / (
+  SUM(profit)*1.0/(
     SELECT
       SUM(profit)
     FROM
